@@ -61,7 +61,7 @@ class ScorePage extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () async {
                 final content = buildExportContent();
-                await exportScoreToDownloads('listenup_score.txt', content);
+                await exportScoreToDownloads('listenapp_score.txt', content);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text('Score saved to Downloads'),
