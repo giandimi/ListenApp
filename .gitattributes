@@ -1,0 +1,4 @@
+*.mp4 filter=lfs diff=lfs merge=lfs -text
+assets/videos/PAOK.mp4 filter=lfs diff=lfs merge=lfs -text
+assets/videos/PAO.mp4 filter=lfs diff=lfs merge=lfs -text
+assets/videos/*.mp4 filter=lfs diff=lfs merge=lfs -text
