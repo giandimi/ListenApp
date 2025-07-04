@@ -1,11 +1,16 @@
-int calculateScore(
+import 'dart:core';
+
+Map<String, dynamic> calculateSectionScore(
   List<Duration> userTimestamps,
   List<Duration> correctTimestamps,
 ) {
-  const int matchThresholdMs = 1000; // Only match if within 1s
+  const int matchThresholdMs = 1000;
   const int penaltyPerMiss = -5;
 
   int score = 0;
+  List<Map<String, dynamic>> matches = [];
+  List<Duration> missedCorrect = [];
+  List<Duration> missedUser = [];
 
   Set<int> matchedUserIndices = {};
   Set<int> matchedCorrectIndices = {};
@@ -19,9 +24,8 @@ int calculateScore(
       if (matchedUserIndices.contains(j)) continue;
 
       Duration user = userTimestamps[j];
-      double diff = (user.inMilliseconds - correct.inMilliseconds)
-          .abs()
-          .toDouble();
+      double diff =
+          (user.inMilliseconds - correct.inMilliseconds).abs().toDouble();
 
       if (diff <= matchThresholdMs && diff < closestDiff) {
         closestDiff = diff;
@@ -38,17 +42,29 @@ int calculateScore(
       } else {
         score += 5;
       }
+
+      matches.add({
+        'correct': correct,
+        'user': userTimestamps[bestMatchIndex],
+        'diff': closestDiff.round(),
+      });
+    } else {
+      missedCorrect.add(correct);
+      score += penaltyPerMiss;
     }
   }
 
-  // Unmatched user timestamps → -5 each
-  int unmatchedUserCount = userTimestamps.length - matchedUserIndices.length;
-  score += unmatchedUserCount * penaltyPerMiss;
+  for (int i = 0; i < userTimestamps.length; i++) {
+    if (!matchedUserIndices.contains(i)) {
+      missedUser.add(userTimestamps[i]);
+      score += penaltyPerMiss;
+    }
+  }
 
-  // Unmatched correct timestamps → -5 each
-  int unmatchedCorrectCount =
-      correctTimestamps.length - matchedCorrectIndices.length;
-  score += unmatchedCorrectCount * penaltyPerMiss;
-
-  return score;
+  return {
+    'score': score,
+    'matches': matches,
+    'missedCorrect': missedCorrect,
+    'missedUser': missedUser,
+  };
 }
